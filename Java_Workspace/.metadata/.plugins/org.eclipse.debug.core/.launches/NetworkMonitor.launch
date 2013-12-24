@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/NetworkMonitor/src/tuwien/auto/calimero/tools/NetworkMonitor.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="tuwien.auto.calimero.tools.NetworkMonitor"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-localhost 128.130.56.132 128.130.56.129 read bool 0.0.1"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="NetworkMonitor"/>
+</launchConfiguration>
