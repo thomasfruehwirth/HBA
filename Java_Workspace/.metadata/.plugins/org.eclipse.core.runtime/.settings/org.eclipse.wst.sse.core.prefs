@@ -1,2 +1,2 @@
 eclipse.preferences.version=1
-task-tag-projects-already-scanned=CalimeroTest,ProcComm,NetworkMonitor,HBA
+task-tag-projects-already-scanned=HBA,DummyServer

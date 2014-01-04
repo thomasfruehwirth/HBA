@@ -1,6 +1,5 @@
 import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.datapoint.StateDP;
-import tuwien.auto.calimero.exception.KNXFormatException;
 import tuwien.auto.calimero.process.ProcessCommunicator;
 
 public class KNXReadableDatapoint extends KNXDatapoint {
@@ -15,7 +14,8 @@ public class KNXReadableDatapoint extends KNXDatapoint {
 			dp = new StateDP(gA, "", 0, getDPT(dpt));
 			debugGAString = groupAddress;
 			this.updateInterval = updateInterval;
-		} catch (KNXFormatException e) {
+			value = pc.read(dp);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

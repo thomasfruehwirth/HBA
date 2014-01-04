@@ -32,20 +32,27 @@ public class HBAMain {
 		// Create Remote Communicator
 		RemoteCommunicator rc = new RemoteCommunicator(datapoints);
 		// Create Datapoints
-		datapoints.put("dpt1", new KNXReadableDatapoint(pc, rc, "dpt1", "1.1.1", "bool", 1000));
+		datapoints.put("dpt1", new KNXReadableDatapoint(pc, rc, "dpt1", "1.1.1", "bool", 10000));
 		datapoints.put("dpt2", new KNXWriteableDatapoint(pc, rc, "dpt2", "1.1.2", "bool"));
 		datapoints.put("dpt3", new KNXWriteableDatapoint(pc, rc, "dpt3", "1.1.3", "bool"));
+		datapoints.put("dpt4", new KNXReadWriteableDatapoint(pc, rc, "dpt4", "1.1.4", "bool", 10000));
+		System.out.println("starting remote communicator");
 		// Start Remote Communicator
 		rc.start();
-		// create a Thread from each datapoint
+		System.out.println("starting datapoints");
+		// Start all datapoint threads
 		for(KNXDatapoint d : datapoints.values()){
 			d.start();
 		}
-		Thread.sleep(10000);
+		
+		System.out.println("wait");
+		Thread.sleep(100000);
 		// interrupt all datapoints
 		for(KNXDatapoint d : datapoints.values()){
 			d.interrupt();
 		}
+		// Interrupt Remote Communicator
+		rc.s.close();
 	}
 
 	private static void registerShutdownHandler() {
