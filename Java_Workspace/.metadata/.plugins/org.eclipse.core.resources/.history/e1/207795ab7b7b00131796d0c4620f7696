@@ -1,0 +1,55 @@
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+
+import tuwien.auto.calimero.exception.KNXException;
+import tuwien.auto.calimero.knxnetip.KNXnetIPConnection;
+import tuwien.auto.calimero.link.KNXNetworkLink;
+import tuwien.auto.calimero.link.KNXNetworkLinkIP;
+import tuwien.auto.calimero.link.medium.KNXMediumSettings;
+import tuwien.auto.calimero.link.medium.TPSettings;
+import tuwien.auto.calimero.process.ProcessCommunicator;
+import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
+
+public class KNXCommunicator {
+	public ProcessCommunicator pc;
+
+	public KNXCommunicator() throws KNXException {
+	}
+
+	public void init() throws KNXException {
+		final KNXNetworkLink lnk = createLink();
+
+		pc = new ProcessCommunicatorImpl(lnk);
+
+		registerShutdownHandler();
+	}
+
+	private KNXNetworkLink createLink() throws KNXException {
+		KNXMediumSettings medium = TPSettings.TP1;
+		InetSocketAddress local;
+		InetSocketAddress host;
+		int mode;
+
+		try {
+			local = new InetSocketAddress(InetAddress.getByName("128.130.56.132"), 0);
+			host = new InetSocketAddress(InetAddress.getByName("128.130.56.129"), new Integer(KNXnetIPConnection.IP_PORT));
+		} catch (UnknownHostException e) {
+			throw new KNXException("Link not created!");
+		}
+
+		mode = KNXNetworkLinkIP.TUNNEL; // KNXNetworkLinkIP.ROUTER;
+
+		try{
+			return new KNXNetworkLinkIP(mode, local, host, false, medium);
+		}catch(KNXException e){
+			System.out.println("ERROR: Could not create Link. Wrong local / host address?");
+			return null;
+		}
+	}
+
+	private void registerShutdownHandler() {
+		System.out.println("Registering Shutdown Handler...");
+		Runtime.getRuntime().addShutdownHook(new ShutdownHandler(pc));
+	}
+}

@@ -1,0 +1,28 @@
+import tuwien.auto.calimero.link.KNXNetworkLink;
+import tuwien.auto.calimero.process.ProcessCommunicator;
+
+public class ShutdownHandler extends Thread {
+	public ProcessCommunicator pc;
+	
+	ShutdownHandler(ProcessCommunicator pc, RemoteCommunicator rc) {
+		this.pc = pc;
+	}
+
+	public void run() {
+		quit();
+	}
+
+	public void quit() {
+		System.out.println("Shudown Handler called...");
+		if (pc != null) {
+			System.out.print("Detaching link...");
+			final KNXNetworkLink lnk = pc.detach();
+
+			if (lnk != null) {
+				System.out.println("Closing link...");
+				lnk.close();
+			}
+		}
+	}
+
+}

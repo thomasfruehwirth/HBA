@@ -13,16 +13,16 @@
 		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="write" key="selection"/>
+		<item value="getDPT" key="selection"/>
 		<list key="findhistory">
+			<item value="getDPT"/>
+			<item value="register"/>
 			<item value="write"/>
 			<item value="reading"/>
 			<item value="dummy"/>
 			<item value="options.put"/>
 			<item value="GroupAddress"/>
 			<item value="read"/>
-			<item value="pc"/>
-			<item value="pc.read"/>
 		</list>
 		<list key="replacehistory">
 		</list>

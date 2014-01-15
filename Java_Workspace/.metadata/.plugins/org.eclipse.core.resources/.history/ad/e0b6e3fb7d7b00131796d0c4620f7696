@@ -1,0 +1,40 @@
+import java.util.Hashtable;
+
+import tuwien.auto.calimero.link.KNXNetworkLink;
+import tuwien.auto.calimero.process.ProcessCommunicator;
+
+public class ShutdownHandler extends Thread {
+	public ProcessCommunicator pc;
+	RemoteCommunicator rc;
+	Hashtable<String, KNXDatapoint> datapoints;
+
+	ShutdownHandler(ProcessCommunicator pc, RemoteCommunicator rc, Hashtable<String, KNXDatapoint> datapoints) {
+		this.pc = pc;
+		this.rc = rc;
+		this.datapoints = datapoints;
+	}
+
+	public void run() {
+		quit();
+	}
+
+	public void quit() {
+		System.out.println("Shudown Handler called...");
+		if (pc != null) {
+			System.out.print("Detaching link...");
+			final KNXNetworkLink lnk = pc.detach();
+
+			if (lnk != null) {
+				System.out.println("Closing link...");
+				lnk.close();
+			}
+		}
+	}
+	// interrupt all datapoints
+	for(KNXDatapoint d : datapoints.values()){
+		d.interrupt();
+	}
+	// Interrupt Remote Communicator
+	System.out.println("trying to close remote connection");
+
+}

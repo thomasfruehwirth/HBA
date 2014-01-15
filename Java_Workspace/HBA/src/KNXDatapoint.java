@@ -5,10 +5,10 @@ import tuwien.auto.calimero.process.ProcessCommunicator;
 public abstract class KNXDatapoint extends Thread{
 	protected String value;
 	public String name;
+	public String type;
 	ProcessCommunicator pc;
 	RemoteCommunicator rc;
-	Datapoint dp;
-	protected String debugGAString;
+	Datapoint dp; // KNX Datapoint
 	
 	protected String getDPT(String dpt)
 	{

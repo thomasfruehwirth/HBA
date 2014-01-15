@@ -1,0 +1,17 @@
+import java.io.*;
+import java.io.OutputStreamWriter;
+
+
+public class Writer extends Thread{
+	OutputStreamWriter remoteStreamWriter;
+	public Writer(OutputStreamWriter remoteStreamWriter){
+		this.remoteStreamWriter = remoteStreamWriter;
+	}
+	
+	public void run(){
+		String s;
+		BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+		s = bf.readLine();
+		
+	}
+}

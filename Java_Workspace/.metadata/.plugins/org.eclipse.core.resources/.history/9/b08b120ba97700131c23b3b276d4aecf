@@ -1,0 +1,9 @@
+import java.io.OutputStreamWriter;
+
+
+public class Writer extends Thread{
+	OutputStreamWriter remoteStreamWriter;
+	public Writer(OutputStreamWriter remoteStreamWriter){
+		this.remoteStreamWriter = remoteStreamWriter;
+	}
+}

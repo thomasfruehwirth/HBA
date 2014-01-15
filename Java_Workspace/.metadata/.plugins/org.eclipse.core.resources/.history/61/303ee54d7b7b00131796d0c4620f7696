@@ -1,0 +1,24 @@
+import tuwien.auto.calimero.link.KNXNetworkLink;
+
+public class ShutdownHandler extends Thread {
+	ShutdownHandler() {
+	}
+
+	public void run() {
+		quit();
+	}
+
+	public void quit() {
+		System.out.println("Shudown Handler called...");
+		if (pc != null) {
+			System.out.print("Detaching link...");
+			final KNXNetworkLink lnk = pc.detach();
+
+			if (lnk != null) {
+				System.out.println("Closing link...");
+				lnk.close();
+			}
+		}
+	}
+
+}

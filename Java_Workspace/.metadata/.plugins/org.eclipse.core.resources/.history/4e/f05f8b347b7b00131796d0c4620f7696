@@ -1,0 +1,13 @@
+
+public class ShutdownHandler {
+	public class ShutdownHandler extends Thread {
+		ShutdownHandler() {
+		}
+
+		public void run() {
+			quit();
+		}
+	}
+
+
+}

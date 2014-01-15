@@ -1,0 +1,52 @@
+import tuwien.auto.calimero.GroupAddress;
+import tuwien.auto.calimero.datapoint.StateDP;
+import tuwien.auto.calimero.process.ProcessCommunicator;
+
+public class KNXReadWriteableDatapoint extends KNXDatapoint {
+	private int updateInterval;
+	public KNXReadWriteableDatapoint(ProcessCommunicator pc, RemoteCommunicator rc, String name, String groupAddress, String dpt, int updateInterval) {
+		try {
+			this.pc = pc;
+			this.rc = rc;
+			this.name = name;
+			this.type = dpt;
+			GroupAddress gA = new GroupAddress(groupAddress); // create a Group Address Object
+			dp = new StateDP(gA, "", 0, getDPT(dpt)); // create a Datapoint Object from the Group Address Object
+			this.updateInterval = updateInterval;
+			value = pc.read(dp);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void run() {
+		try {
+			for (;;) {
+				Thread.sleep(updateInterval); // might be interrupted
+				String newValue = pc.read(dp);
+				if (!newValue.equals(value)) {
+					value = newValue;
+					rc.send(name, newValue);
+				}
+			}
+		} catch (InterruptedException e) {
+			// Thread terminating due to interrupt. This is not an ERROR
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void writeValue(String value) {
+		this.value = value;
+		try {
+			pc.write(dp, value);
+			rc.send(name, pc.read(dp));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public String readValue(){
+		return value;
+	}
+}

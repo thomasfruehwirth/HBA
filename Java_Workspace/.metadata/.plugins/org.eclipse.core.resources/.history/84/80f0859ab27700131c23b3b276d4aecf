@@ -1,0 +1,128 @@
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
+
+import tuwien.auto.calimero.GroupAddress;
+import tuwien.auto.calimero.Settings;
+import tuwien.auto.calimero.datapoint.Datapoint;
+import tuwien.auto.calimero.datapoint.StateDP;
+import tuwien.auto.calimero.exception.KNXException;
+import tuwien.auto.calimero.exception.KNXFormatException;
+import tuwien.auto.calimero.exception.KNXIllegalArgumentException;
+import tuwien.auto.calimero.knxnetip.KNXnetIPConnection;
+import tuwien.auto.calimero.link.KNXNetworkLink;
+import tuwien.auto.calimero.link.KNXNetworkLinkFT12;
+import tuwien.auto.calimero.link.KNXNetworkLinkIP;
+import tuwien.auto.calimero.link.medium.KNXMediumSettings;
+import tuwien.auto.calimero.link.medium.PLSettings;
+import tuwien.auto.calimero.link.medium.RFSettings;
+import tuwien.auto.calimero.link.medium.TPSettings;
+import tuwien.auto.calimero.log.LogLevel;
+import tuwien.auto.calimero.log.LogManager;
+import tuwien.auto.calimero.log.LogStreamWriter;
+import tuwien.auto.calimero.log.LogWriter;
+import tuwien.auto.calimero.process.ProcessCommunicator;
+import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
+import tuwien.auto.calimero.process.ProcessListener;
+
+public class KNXCommunicator
+{
+	public ProcessCommunicator pc;
+	private   ShutdownHandler sh;
+
+	public KNXCommunicator() throws KNXException
+	{
+	}
+
+	public void init() throws KNXException
+	{		
+		final KNXNetworkLink lnk = createLink();
+
+		pc = new ProcessCommunicatorImpl(lnk);
+		
+		registerShutdownHandler();
+	}
+
+	private KNXNetworkLink createLink() throws KNXException
+	{
+		KNXMediumSettings medium = TPSettings.TP1;
+		InetSocketAddress local;
+		InetSocketAddress host;
+		int mode;
+		
+		try
+		{
+			local = new InetSocketAddress(InetAddress.getByName("128.130.56.136"),0);
+			host =  new InetSocketAddress(InetAddress.getByName("128.130.56.129"),
+				                                                    new Integer(KNXnetIPConnection.IP_PORT));
+		}catch (UnknownHostException e) 
+		{
+			throw new KNXException("Link not created!");
+		}
+		
+		mode = KNXNetworkLinkIP.TUNNEL; // KNXNetworkLinkIP.ROUTER;
+		
+		return new KNXNetworkLinkIP(mode,local,host,false,medium);
+	}
+	
+	public String getDPT(String dpt)
+	{
+		if (dpt.equals("switch"))
+			return "1.001";
+		if (dpt.equals("bool"))
+			return "1.002";
+		if (dpt.equals("string"))
+			return "16.001";
+		if (dpt.equals("float"))
+			return "9.002";
+		if (dpt.equals("ucount"))
+			return "5.010";
+		if (dpt.equals("angle"))
+			return "5.003";
+		return dpt;
+	}
+	
+	public String read(Datapoint dp) throws KNXException
+	{
+		return pc.read(dp);
+	}
+	
+	public void write(Datapoint dp, String value) throws KNXException
+	{
+		pc.write(dp,value);
+	}
+	
+	public void quit()
+	{
+		if (pc != null) 
+		{
+			final KNXNetworkLink lnk = pc.detach();
+			
+			if (lnk != null)
+			{
+				lnk.close();
+			}
+			
+			Runtime.getRuntime().removeShutdownHook(sh);
+		}
+	}
+	
+	private final class ShutdownHandler extends Thread
+	{
+		ShutdownHandler()
+		{
+		}
+
+		public void run()
+		{
+			quit();
+		}
+	}
+
+	private void registerShutdownHandler()
+	{
+		Runtime.getRuntime().addShutdownHook(sh = new ShutdownHandler());
+	}
+}

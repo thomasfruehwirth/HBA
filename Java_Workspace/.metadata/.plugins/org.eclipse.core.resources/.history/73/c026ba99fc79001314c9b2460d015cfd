@@ -1,0 +1,139 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Hashtable;
+
+public class RemoteCommunicator extends Thread {
+	Hashtable<String, KNXDatapoint> datapoints;
+	public ServerSocket ss;
+	public Socket s;
+	BufferedReader remoteStreamReader;
+	OutputStreamWriter remoteStreamWriter;
+	public static int port = 10000;
+
+	public RemoteCommunicator(Hashtable<String, KNXDatapoint> datapoints) {
+		this.datapoints = datapoints;
+		try {
+			// open remote connection
+			ss = new ServerSocket(port);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void run() {
+		// warte auf anfragen: read all bzw write
+		// wenn write kann es sich um einen ReadWriteable datapoint oder einen Writeable datapoint handeln 
+		while (true) {
+			try {
+				// some tests for debugging:
+				//			Thread.sleep(500);
+				//			received("dpt2", "true");
+				//			received("dpt3", "false");
+				//			Thread.sleep(2000);
+				System.out.println("Waiting for remote connection");
+
+				s = ss.accept();
+				remoteStreamReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+				remoteStreamWriter = new OutputStreamWriter(s.getOutputStream());
+				while (true) {
+					String line = remoteStreamReader.readLine();
+					System.out.println("received remote message: " + line);
+					if (line.startsWith("list")) {
+						list();
+					} else if (line.startsWith("read all")) {
+						readAll();
+					} else if (line.startsWith("write") && line.split(" ").length == 3) {
+						received(line.split(" ")[1], line.split(" ")[2]);
+					} else {
+						this.send("ERROR", "invalid command " + line);
+					}
+				}
+
+			} catch (IOException e) {
+				System.out.println("ERROR at remote connection");
+				//e.printStackTrace();
+			}
+		}
+	}
+
+	// called when a readAll command was received via the remote connection
+	// the values of all readable and readwriteable datapoints are sent
+	public void readAll() {
+		System.out.println("received read all command");
+		for (String name : datapoints.keySet()) {
+			KNXDatapoint d = datapoints.get(name);
+			if (d instanceof KNXReadableDatapoint) {
+				send(name, ((KNXReadableDatapoint) d).readValue());
+			} else if (d instanceof KNXReadWriteableDatapoint)
+				send(name, ((KNXReadWriteableDatapoint) d).readValue());
+			else {
+				//				System.out.println("RC: Error: Datapoint " + name + " is not readable");
+			}
+		}
+	}
+
+	// called when a readAll command was received via the remote connection
+	// the name, the r/w type and the datatype of all datapoints are sent
+	public void list() {
+		System.out.println("received list command");
+		String s = new String();
+		for (String name : datapoints.keySet()) {
+			KNXDatapoint d = datapoints.get(name);
+			s += d.name;
+			if (d instanceof KNXReadableDatapoint) {
+				s += " r ";
+			} else if (d instanceof KNXReadWriteableDatapoint) {
+				s += " rw ";
+			} else if (d instanceof KNXReadWriteableDatapoint)
+				s += " w ";
+			else {
+				//				System.out.println("RC: Error: Datapoint " + name + " is not readable");
+			}
+			s += d.type + ";";
+		}
+		try {
+			if (remoteStreamWriter != null) {
+				remoteStreamWriter.write(s + "\n");
+				remoteStreamWriter.flush();
+			}
+		} catch (IOException e) {
+			System.out.println("ERROR: Remote Connection down. cannot send value.");
+			//			e.printStackTrace();
+		}
+
+	}
+
+	// called when a new value is received via remote connection (i.e. a write command is received)
+	public void received(String name, String value) {
+		KNXDatapoint d = (KNXDatapoint) datapoints.get(name);
+		System.out.println("RC: Received write command: new value " + value + " for " + name);
+		if (d == null) {
+			System.out.println("RC: error " + name + " is null");
+		} else if (d instanceof KNXWriteableDatapoint) {
+			((KNXWriteableDatapoint) d).writeValue(value);
+		} else if (d instanceof KNXReadWriteableDatapoint) {
+			((KNXReadWriteableDatapoint) d).writeValue(value);
+		} else {
+			System.out.println("RC: Error: Datapoint " + name + " is not writeable");
+		}
+	}
+
+	// used to send new values via the remote connection (called by readable and readwriteable datapoints)
+	public void send(String name, String value) {
+		System.out.println("RC: send: " + name + ": " + value);
+		try {
+			if (remoteStreamWriter != null) {
+				remoteStreamWriter.write(name + ":" + value + "\n");
+				remoteStreamWriter.flush();
+			}
+		} catch (IOException e) {
+			System.out.println("ERROR: Remote Connection down. cannot send value.");
+			//			e.printStackTrace();
+		}
+	}
+}

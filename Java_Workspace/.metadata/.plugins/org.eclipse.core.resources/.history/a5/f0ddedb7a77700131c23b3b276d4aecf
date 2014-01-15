@@ -1,0 +1,16 @@
+import java.net.Socket;
+
+
+public class DummyClientMain {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		//1. creating a socket to connect to the server
+		socket = new Socket("62.93.123.110", 10000);
+		System.out.println("Connected to 62.93.123.110 in port 10000");
+
+	}
+
+}

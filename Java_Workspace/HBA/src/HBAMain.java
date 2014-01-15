@@ -12,72 +12,67 @@ import tuwien.auto.calimero.link.medium.TPSettings;
 import tuwien.auto.calimero.process.ProcessCommunicator;
 import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
 
-
 public class HBAMain {
 	public final static boolean DEBUG = true;	// dummy process communicator is used when true
+	public final static String localIP = "128.130.56.132"; // local address connected to KNX IP Router
+	public final static String hostIP = "128.130.56.129"; // address of KNX IP Router
+	public final static int remotePort = 10000;
 
 	public static void main(String[] args) throws Exception{
 		// create process communicator
-		ProcessCommunicator pc ;
+		ProcessCommunicator pc;
 		if(DEBUG){
 			pc = new ProcessCommunicatorDummy(null);
 		}
 		else{
 			final KNXNetworkLink lnk = createLink();
 			pc = new ProcessCommunicatorImpl(lnk);
-			registerShutdownHandler();
 		}
 		
 		Hashtable<String, KNXDatapoint> datapoints = new Hashtable<String, KNXDatapoint>();
 		// Create Remote Communicator
-		RemoteCommunicator rc = new RemoteCommunicator(datapoints);
+		RemoteCommunicator rc = new RemoteCommunicator(datapoints, remotePort);
 		// Create Datapoints
-		datapoints.put("dpt1", new KNXReadableDatapoint(pc, rc, "dpt1", "1.1.1", "bool", 10000));
-		datapoints.put("dpt2", new KNXWriteableDatapoint(pc, rc, "dpt2", "1.1.2", "bool"));
-		datapoints.put("dpt3", new KNXWriteableDatapoint(pc, rc, "dpt3", "1.1.3", "bool"));
-		datapoints.put("dpt4", new KNXReadWriteableDatapoint(pc, rc, "dpt4", "1.1.4", "bool", 10000));
-		System.out.println("starting remote communicator");
+		datapoints.put("OuterTemp", new KNXReadableDatapoint(pc, rc, "OuterTemp", "0.4.0", "float", 1000));
+		datapoints.put("InnerTemp", new KNXReadableDatapoint(pc, rc, "InnerTemp", "0.4.1", "float", 1000));
+		datapoints.put("Fan", new KNXReadWriteableDatapoint(pc, rc, "Fan", "0.1.0", "bool", 1000));
+		datapoints.put("RightLight", new KNXReadWriteableDatapoint(pc, rc, "RightLight", "0.0.2", "bool", 1000));
+//		datapoints.put("dpt2", new KNXWriteableDatapoint(pc, rc, "dpt2", "1.1.2", "bool"));
+
 		// Start Remote Communicator
 		rc.start();
-		System.out.println("starting datapoints");
+
 		// Start all datapoint threads
 		for(KNXDatapoint d : datapoints.values()){
 			d.start();
 		}
 		
-		System.out.println("wait");
-		Thread.sleep(100000);
-		// interrupt all datapoints
-		for(KNXDatapoint d : datapoints.values()){
-			d.interrupt();
-		}
-		// Interrupt Remote Communicator
-		rc.s.close();
+		// Register Shutdown Handler
+		Runtime.getRuntime().addShutdownHook(new ShutdownHandler(pc, rc, datapoints));
 	}
-
-	private static void registerShutdownHandler() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private static KNXNetworkLink createLink() throws Exception{
+	
+	private static KNXNetworkLink createLink() throws KNXException {
 		KNXMediumSettings medium = TPSettings.TP1;
 		InetSocketAddress local;
 		InetSocketAddress host;
 		int mode;
-		
-		try
-		{
-			local = new InetSocketAddress(InetAddress.getByName("128.130.56.133"),0);
-			host =  new InetSocketAddress(InetAddress.getByName("128.130.56.129"), new Integer(KNXnetIPConnection.IP_PORT));
-		}catch (UnknownHostException e) 
-		{
+
+		try {
+			local = new InetSocketAddress(InetAddress.getByName(localIP), 0);
+			host = new InetSocketAddress(InetAddress.getByName(hostIP), new Integer(KNXnetIPConnection.IP_PORT));
+		} catch (UnknownHostException e) {
 			throw new KNXException("Link not created!");
 		}
-		
+
 		mode = KNXNetworkLinkIP.TUNNEL; // KNXNetworkLinkIP.ROUTER;
-		
-		return new KNXNetworkLinkIP(mode,local,host,false,medium);
+
+		try{
+			return new KNXNetworkLinkIP(mode, local, host, false, medium);
+		}catch(KNXException e){
+			System.out.println("KNX: ERROR: Could not create Link. Wrong local / host address?");
+			return null;
+		}
 	}
+
 
 }

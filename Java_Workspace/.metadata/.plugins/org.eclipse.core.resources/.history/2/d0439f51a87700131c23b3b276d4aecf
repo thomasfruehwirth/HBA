@@ -1,0 +1,26 @@
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+
+public class DummyClientMain {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		//1. creating a socket to connect to the server
+		try {
+			Socket socket = new Socket("62.93.123.110", 10000);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Connected to 62.93.123.110 in port 10000");
+
+	}
+
+}

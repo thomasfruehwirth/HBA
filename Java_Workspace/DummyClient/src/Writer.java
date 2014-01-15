@@ -1,0 +1,27 @@
+import java.io.*;
+
+
+public class Writer extends Thread{
+	OutputStreamWriter remoteStreamWriter;
+	public Writer(OutputStreamWriter remoteStreamWriter){
+		this.remoteStreamWriter = remoteStreamWriter;
+	}
+	
+	public void run(){
+		String s;
+		BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+		try {
+			s = bf.readLine();
+			while(!s.equals("quit")){
+				System.out.println("Local input: " + s);
+				remoteStreamWriter.write(s+"\n");
+				remoteStreamWriter.flush();
+				s = bf.readLine();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+}

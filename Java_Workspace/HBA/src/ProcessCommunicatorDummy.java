@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.Random;
 
 import tuwien.auto.calimero.GroupAddress;
@@ -10,16 +11,16 @@ import tuwien.auto.calimero.link.KNXNetworkLink;
 import tuwien.auto.calimero.process.ProcessCommunicator;
 import tuwien.auto.calimero.process.ProcessListener;
 
-public class ProcessCommunicatorDummy implements ProcessCommunicator{
+public class ProcessCommunicatorDummy implements ProcessCommunicator {
 
-	public ProcessCommunicatorDummy(KNXNetworkLink lnk){
-		
+	public ProcessCommunicatorDummy(KNXNetworkLink lnk) {
+
 	}
-	
+
 	@Override
 	public void addProcessListener(ProcessListener arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -42,11 +43,12 @@ public class ProcessCommunicatorDummy implements ProcessCommunicator{
 
 	@Override
 	public String read(Datapoint arg0) throws KNXException {
-		// TODO Auto-generated method stub
+		DecimalFormat df = new DecimalFormat();
+		df.setMaximumFractionDigits(2);
 		Random generator = new Random();
 		System.out.println("KNX: reading address " + arg0.getMainAddress());
 		float f = generator.nextFloat();
-		return "hier steht glaub ich irgendwas " + f;
+		return df.format(f);
 	}
 
 	@Override
@@ -82,37 +84,37 @@ public class ProcessCommunicatorDummy implements ProcessCommunicator{
 	@Override
 	public void removeProcessListener(ProcessListener arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setPriority(Priority arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setResponseTimeout(int arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void write(GroupAddress arg0, boolean arg1) throws KNXTimeoutException, KNXLinkClosedException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void write(GroupAddress arg0, float arg1) throws KNXException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void write(GroupAddress arg0, String arg1) throws KNXException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -124,19 +126,19 @@ public class ProcessCommunicatorDummy implements ProcessCommunicator{
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}		
+		}
 	}
 
 	@Override
 	public void write(GroupAddress arg0, int arg1, String arg2) throws KNXException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void write(GroupAddress arg0, boolean arg1, byte arg2) throws KNXException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
