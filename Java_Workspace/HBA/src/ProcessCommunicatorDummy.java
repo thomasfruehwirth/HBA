@@ -43,12 +43,22 @@ public class ProcessCommunicatorDummy implements ProcessCommunicator {
 
 	@Override
 	public String read(Datapoint arg0) throws KNXException {
-		DecimalFormat df = new DecimalFormat();
-		df.setMaximumFractionDigits(2);
 		Random generator = new Random();
 		System.out.println("KNX: reading address " + arg0.getMainAddress());
-		float f = generator.nextFloat();
-		return df.format(f);
+		
+		if (arg0.getDPT().equals("1.002"))
+		{
+			return (generator.nextBoolean())? "true":"false";
+		}
+		else if (arg0.getDPT().equals("9.002"))
+		{
+			DecimalFormat df = new DecimalFormat();
+			df.setMaximumFractionDigits(2);
+			float f = generator.nextFloat();
+			return df.format(f);
+		}
+		
+		return "Dummy only supports bool and float!";		
 	}
 
 	@Override
