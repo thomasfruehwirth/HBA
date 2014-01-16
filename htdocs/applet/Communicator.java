@@ -97,7 +97,6 @@ public class Communicator extends JApplet implements KeyListener, ActionListener
 		mt = new MediaTracker(this);
 		FontMetrics fontMetrics;
 		
-		// load images, using the mediatracker
 		imgBk = getImage(getCodeBase(),"bk.jpg");
 		mt.addImage(imgBk,0);
 		
@@ -123,7 +122,6 @@ public class Communicator extends JApplet implements KeyListener, ActionListener
 		
 		mainPanel = new JPanel();
 		
-		// Creating the Design Layout
 		mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
 		mainPanel.setBorder(raisedbevel);
 		mainPanel.add(Box.createRigidArea(new Dimension(0,2)));
@@ -173,7 +171,6 @@ public class Communicator extends JApplet implements KeyListener, ActionListener
 		imgPanel = new ImagePane(imgBk);
 		imgPanel.setLayout(null);
 		
-		// wait until all images are loaded
 		try
 		{
 			mt.waitForAll();
@@ -216,7 +213,6 @@ public class Communicator extends JApplet implements KeyListener, ActionListener
 		
 		calcZoom();
 		
-		// create buttons using relative position
 		btnFanL = new SwitchImageButton(imgFanOff,imgFanOn,false);
 		btnFanL.addActionListener(this);
 		btnFanL.setBounds(getAbsPos(posFanL).x-ICON_SIZE/2,getAbsPos(posFanL).y-ICON_SIZE/2,ICON_SIZE,ICON_SIZE);
@@ -275,14 +271,13 @@ public class Communicator extends JApplet implements KeyListener, ActionListener
 	{
 		float viewRatio;
 	
-		// calculate the maximum zoom factor (depending on resolution of bk)
 		if ((imgScrollPane.getWidth() > 0)&&(imgScrollPane.getHeight() > 0))
 		{
 			viewRatio = (float)imgScrollPane.getWidth()/(float)imgScrollPane.getHeight();
 			
-			if (viewRatio >= 1) // landscape pane
+			if (viewRatio >= 1)
 			{
-				if (imgRatio >= viewRatio) // landscape image
+				if (imgRatio >= viewRatio)
 				{
 					maxZoom = (float)imgRectOrig.width/(float)imgScrollPane.getWidth();
 					zoomW = true;
@@ -351,7 +346,6 @@ public class Communicator extends JApplet implements KeyListener, ActionListener
 			imgPanel.revalidate();
 			imgPanel.repaint();
 			
-			// move buttons to relative positions			
 			btnFanL.setBounds(getAbsPos(posFanL).x-ICON_SIZE/2,getAbsPos(posFanL).y-ICON_SIZE/2,ICON_SIZE,ICON_SIZE);
 			btnFanR.setBounds(getAbsPos(posFanR).x-ICON_SIZE/2,getAbsPos(posFanR).y-ICON_SIZE/2,ICON_SIZE,ICON_SIZE);
 			btnLightL.setBounds(getAbsPos(posLightL).x-ICON_SIZE/2,getAbsPos(posLightL).y-ICON_SIZE/2,ICON_SIZE,ICON_SIZE);
@@ -394,7 +388,6 @@ public class Communicator extends JApplet implements KeyListener, ActionListener
 		{
 			socket = new Socket(getDocumentBase().getHost(),port); 
 			
-			// connect TCP socket
 			if (socket.isConnected())
 			{
 				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -415,7 +408,6 @@ public class Communicator extends JApplet implements KeyListener, ActionListener
 		}
 	}
 	
-	// Listener read new line
 	public void newLine(String line)
 	{
 		if (line != null)
@@ -450,7 +442,6 @@ public class Communicator extends JApplet implements KeyListener, ActionListener
 		}
 	}
 
-	// stop TCP connection
 	public void stop()
 	{
 		try
@@ -511,7 +502,7 @@ public class Communicator extends JApplet implements KeyListener, ActionListener
 		}
 		else if (e.getSource() == btnLightR)
 		{
-			setValue("LeftRight",btnLightR.getStatus()?"true":"false");
+			setValue("RightLight",btnLightR.getStatus()?"true":"false");
 		}
 		else if (e.getSource() == btnFanL)
 		{

@@ -39,7 +39,6 @@ public class Listener extends Thread
 
 				try
 				{
-					// blocking read
 					s = in.readLine();
 					com.newLine(s);		
 				}

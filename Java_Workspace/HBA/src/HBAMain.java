@@ -13,8 +13,8 @@ import tuwien.auto.calimero.process.ProcessCommunicator;
 import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
 
 public class HBAMain {
-	public final static boolean DEBUG = true;	// dummy process communicator is used when true
-	public final static String localIP = "128.130.56.132"; // local address connected to KNX IP Router
+	public final static boolean DEBUG = false;	// dummy process communicator is used when true
+	public final static String localIP = "128.130.56.134"; // local address connected to KNX IP Router
 	public final static String hostIP = "128.130.56.129"; // address of KNX IP Router
 	public final static int remotePort = 10000;
 
