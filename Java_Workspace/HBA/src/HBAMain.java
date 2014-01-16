@@ -19,10 +19,13 @@ public class HBAMain {
 	public final static int remotePort = 10000;
 
 	public static void main(String[] args) throws Exception{
+		int updateInterval = 1000;
+	
 		// create process communicator
 		ProcessCommunicator pc;
 		if(DEBUG){
 			pc = new ProcessCommunicatorDummy(null);
+			updateInterval = 4000;
 		}
 		else{
 			final KNXNetworkLink lnk = createLink();
@@ -33,10 +36,10 @@ public class HBAMain {
 		// Create Remote Communicator
 		RemoteCommunicator rc = new RemoteCommunicator(datapoints, remotePort);
 		// Create Datapoints
-		datapoints.put("OuterTemp", new KNXReadableDatapoint(pc, rc, "OuterTemp", "0.4.0", "float", 1000));
-		datapoints.put("InnerTemp", new KNXReadableDatapoint(pc, rc, "InnerTemp", "0.4.1", "float", 1000));
-		datapoints.put("Fan", new KNXReadWriteableDatapoint(pc, rc, "Fan", "0.1.0", "bool", 1000));
-		datapoints.put("RightLight", new KNXReadWriteableDatapoint(pc, rc, "RightLight", "0.0.2", "bool", 1000));
+		datapoints.put("OuterTemp", new KNXReadableDatapoint(pc, rc, "OuterTemp", "0.4.0", "float", updateInterval));
+		datapoints.put("InnerTemp", new KNXReadableDatapoint(pc, rc, "InnerTemp", "0.4.1", "float", updateInterval));
+		datapoints.put("Fan", new KNXReadWriteableDatapoint(pc, rc, "Fan", "0.1.0", "bool", updateInterval));
+		datapoints.put("RightLight", new KNXReadWriteableDatapoint(pc, rc, "RightLight", "0.0.2", "bool", updateInterval));
 //		datapoints.put("dpt2", new KNXWriteableDatapoint(pc, rc, "dpt2", "1.1.2", "bool"));
 
 		// Start Remote Communicator
